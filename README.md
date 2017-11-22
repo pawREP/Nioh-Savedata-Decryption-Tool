@@ -3,11 +3,11 @@
 This tool allows the decryption and encryption of Nioh user and system save files. You can find the latest release version [here](https://github.com/pawREP/Nioh-Savedata-Decryption-Tool/releases/latest).
 
 ### How to use:
-Files are encrypted and decrypted by dragging them onto the exe or equivalently by passing the file path as the first argument when using the tool in the command line. Whether encryption or decrytion is performed is automatically determined based on the first 4 bytes of the input file. Decrypted save files always start with `4E 49 4F 48`.
+Files are encrypted and decrypted by dragging them onto the exe or equivalently by passing the file path as the first argument when using the tool in the command line. Whether encryption or decryption is performed is automatically determined based on the first 4 bytes of the input file. Decrypted save files always start with `4E 49 4F 48`.
 
 ## Cipher overview:
 
-Nioh uses a fairly complex algorithm to encrypt and decrypt save files. The full algorithm involves six pairs of AES-128 keys and IVs which are derived from a 148 byte chunck of memory and contents of the decryted save file header. The AES-128 cipher is used in CTR mode with a custom, non-invertible SBox. 
+Nioh uses a fairly complex algorithm to encrypt and decrypt save files. The full algorithm involves six pairs of AES-128 keys and IVs which are derived from a 148 byte chunck of memory and contents of the decrypted save file header. The AES-128 cipher is used in CTR mode with a custom, non-invertible SBox. 
 
 The diagram below illustrates the algorithm, see code for details:
 
