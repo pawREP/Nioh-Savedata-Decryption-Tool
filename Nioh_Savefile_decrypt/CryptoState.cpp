@@ -8,6 +8,8 @@ extern "C" {
 	#include "aes.h"
 }
 
+FILE_TYPE CryptoState::file_type = FILE_TYPE::USR;
+
 void CryptoState::flip_32bit_endianness(unsigned char* arr) {
 	unsigned char a, b, c, d;
 	for (size_t i = 0; i < 4; i++) {
@@ -37,7 +39,7 @@ void CryptoState::key_setup(DECRYPTION_TYPE type) {
 		memcpy_s(s_IV_2, BLOCK_SIZE, root_crypto_blob + 132, BLOCK_SIZE);
 		break;
 	case DECRYPTION_TYPE::BODY:
-		memcpy_s(s_key_1, BLOCK_SIZE, savedata_clear + 0x40, BLOCK_SIZE);//TODO: Carful, order not confirmed in debugger.
+		memcpy_s(s_key_1, BLOCK_SIZE, savedata_clear + 0x40, BLOCK_SIZE);
 		memcpy_s(s_IV_1, BLOCK_SIZE, savedata_clear + 0x50, BLOCK_SIZE);
 		memcpy_s(s_key_2, BLOCK_SIZE, savedata_clear + 0x60, BLOCK_SIZE);
 		memcpy_s(s_IV_2, BLOCK_SIZE, savedata_clear + 0x70, BLOCK_SIZE);
@@ -152,15 +154,15 @@ bool CryptoState::decrypt(unsigned char* cipher_text, unsigned char* clear_text)
 	savedata_encr = cipher_text;
 	savedata_clear = clear_text;
 	if (is_encrypted(savedata_encr)) {
-		printf("Detected encrypted file. Starting decryption...   ");
+		printf("Detected encrypted %s file. Starting decryption...   ", file_type == FILE_TYPE::USR ? "NIOHUSR" : "NIOHSYS");
 		key_setup(DECRYPTION_TYPE::HEADER);
 		decrypt_header();
-		key_setup(DECRYPTION_TYPE::BODY); //header has to be decrypted before doing the body key setup
+		key_setup(DECRYPTION_TYPE::BODY); //header has to be decrypted before doing the body key setup. Key setup is the same for user and sys files.
 		decrypt_body();
 		return !is_encrypted(savedata_clear);
 	}
 	else {
-		printf("Detected decrypted file. Starting encryption...   ");
+		printf("Detected decrypted %s file. Starting encryption...   ", file_type == FILE_TYPE::USR ? "NIOHUSR" : "NIOHSYS");
 		memcpy_s(savedata_clear, HEADER_SIZE, savedata_encr, HEADER_SIZE);
 		key_setup(DECRYPTION_TYPE::BODY);
 		decrypt_body();
@@ -216,7 +218,13 @@ void CryptoState::decrypt_body() {
 	unsigned char IV_local[BLOCK_SIZE];
 	unsigned char out[BLOCK_SIZE];
 
-	unsigned int n_rounds = BODY_SIZE / BLOCK_SIZE;
+	unsigned int n_rounds;
+	if (file_type == FILE_TYPE::USR) {
+		n_rounds = USR_BODY_SIZE / BLOCK_SIZE;
+	}
+	else {
+		n_rounds = SYS_BODY_SIZE / BLOCK_SIZE + 1;
+	}
 
 	memcpy_s(IV_local, BLOCK_SIZE, s_IV_2, BLOCK_SIZE);
 	for (int i = 0; i < n_rounds; i++) {
@@ -234,5 +242,14 @@ void CryptoState::decrypt_body() {
 		for (int j = 0; j < BLOCK_SIZE; j++) {
 			savedata_clear[BLOCK_SIZE * i + j + HEADER_SIZE] ^= out[j];
 		}
+	}
+}
+
+int CryptoState::get_file_size() {
+	switch (CryptoState::file_type) {
+	case FILE_TYPE::USR:
+		return HEADER_SIZE + USR_BODY_SIZE;
+	case FILE_TYPE::SYS:
+		return HEADER_SIZE + SYS_BODY_SIZE;
 	}
 }

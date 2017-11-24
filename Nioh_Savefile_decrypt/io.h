@@ -9,6 +9,11 @@ class io
 {
 
 public:
+	static int get_file_size(std::string path) {
+		std::ifstream file(path, std::ifstream::ate | std::ifstream::binary);
+		return file.tellg();
+	}
+
 	static void print_array(unsigned char* c, int size) {
 		for (int j = 0; j < size; j++) {
 			if (j % 16 == 0)

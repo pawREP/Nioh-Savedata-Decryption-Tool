@@ -6,6 +6,12 @@
 
 int main(int argc, char* argv[]){
 
+	if (argc == 1) {
+		printf("No input file specified. \n\nPress Enter To Exit...\n");
+		std::cin.ignore();
+		exit(1);
+	}
+
 	unsigned char root_crypto_blob[148] = {
 		0x54, 0x19, 0x31, 0x3E, 0xF4, 0x6B, 0xE4, 0x24, 0xCD, 0xA7, 0x96, 0x6F,	0xAB, 0xF0, 0x69, 0xCA,
 		0x00, 0x00, 0x80, 0xBF, 0xEC, 0x3B, 0x9D, 0xA1, 0x46, 0x0C, 0xDD, 0x33,	0xF3, 0xD2, 0x58, 0xE0,
@@ -19,34 +25,40 @@ int main(int argc, char* argv[]){
 		0xF2, 0x00, 0x8C, 0x62
 	};
 
-	unsigned char* savedata_encr = new unsigned char[SAVEDATA_SIZE];
-	unsigned char* savedata_clear = new unsigned char[SAVEDATA_SIZE];
-
-	printf("----------------------------------------------\n");
-	printf("Nioh Savedata decryption/encryption tool by B3.\n");
-	printf("Tool version: 1.0\n");
-	printf("Developed for game version 1.21.02\n");
-	printf("----------------------------------------------\n\n");
-
-
-	if (argc == 1) {
-		printf("No input file specified. \n\nPress Enter To Exit...\n");
+	switch (io::get_file_size(argv[1])) {
+	case HEADER_SIZE + USR_BODY_SIZE:
+		CryptoState::file_type = FILE_TYPE::USR;
+		break;
+	case HEADER_SIZE + SYS_BODY_SIZE:
+		CryptoState::file_type = FILE_TYPE::SYS;
+		break;
+	default:
+		printf("Wrong file size. \n\nPress Enter To Exit...\n");
 		std::cin.ignore();
 		exit(1);
 	}
-	if (!io::parse_savefile(argv[1], savedata_encr, SAVEDATA_SIZE)) {
+
+	unsigned char* savedata_encr = new unsigned char[CryptoState::get_file_size() + BLOCK_SIZE]; //the extra block is to deal with file blocks that are not 16 byte aligned.
+	unsigned char* savedata_clear = new unsigned char[CryptoState::get_file_size()+ BLOCK_SIZE];
+
+	printf("----------------------------------------------\n");
+	printf("Nioh Savedata decryption/encryption tool by B3.\n");
+	printf("Tool version: 1.1\n");
+	printf("Developed for game version 1.21.02\n");
+	printf("----------------------------------------------\n\n");
+
+	if (!io::parse_savefile(argv[1], savedata_encr, CryptoState::get_file_size())) {
 		printf("Failed to read file. \n\nPress Enter To Exit...\n");
 		std::cin.ignore();
 		exit(1);
 	}
-
 
 	CryptoState cs(root_crypto_blob);
 	if (!cs.decrypt(savedata_encr, savedata_clear)) {
 		printf("\n\nDecryption failed. \n\nPress Enter To Exit...\n");
 	}
 	else {
-		io::save_decrypted_savefile(std::string(argv[1]), savedata_clear, SAVEDATA_SIZE);
+		io::save_decrypted_savefile(std::string(argv[1]), savedata_clear, CryptoState::get_file_size());
 		printf("success! \n\nPress Enter To Exit...\n");
 	}
 
