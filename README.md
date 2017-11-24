@@ -7,7 +7,7 @@ Files are encrypted and decrypted by dragging them onto the exe or equivalently 
 
 ## Cipher overview:
 
-Nioh uses a fairly complex algorithm to encrypt and decrypt save files. The full algorithm involves six pairs of AES-128 keys and IVs which are derived from a 148 byte chunck of memory and contents of the decrypted save file header. The AES-128 cipher is used in CTR mode with a custom, non-invertible SBox. 
+Nioh uses a fairly complex algorithm to encrypt and decrypt save files. The full algorithm involves six pairs of AES-128 keys and IVs which are derived from a 148 byte chunk of memory and contents of the decrypted save file header. The AES-128 cipher is used in CTR mode with a custom, non-invertible SBox. 
 
 The diagram below illustrates the algorithm, see code for details:
 
