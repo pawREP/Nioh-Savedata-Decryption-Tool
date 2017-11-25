@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+#Folders
+Nioh_Savefile_decrypt/x64/*
+x64/
+.vs/
