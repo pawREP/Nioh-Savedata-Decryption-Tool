@@ -159,8 +159,20 @@ bool CryptoState::decrypt(unsigned char* cipher_text, unsigned char* clear_text)
 		decrypt_header();
 		key_setup(DECRYPTION_TYPE::BODY); //header has to be decrypted before doing the body key setup. Key setup is the same for user and sys files.
 		decrypt_body();
+
+		/*
+		Sub keys for the save data body decryption are randomly generated,
+		they don't have to be conserved. Setting them all to zero makes comparing
+		different saves a bit easier.
+		*/
+		unsigned char zero[BLOCK_SIZE] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		memcpy_s(savedata_clear + 0x40, BLOCK_SIZE, zero, BLOCK_SIZE);
+		memcpy_s(savedata_clear + 0x50, BLOCK_SIZE, zero, BLOCK_SIZE);
+		memcpy_s(savedata_clear + 0x60, BLOCK_SIZE, zero, BLOCK_SIZE);
+		memcpy_s(savedata_clear + 0x70, BLOCK_SIZE, zero, BLOCK_SIZE);
+
 		return !is_encrypted(savedata_clear);
-	}
+	} 
 	else {
 		printf("Detected decrypted %s file. Starting encryption...   ", file_type == FILE_TYPE::USR ? "NIOHUSR" : "NIOHSYS");
 		memcpy_s(savedata_clear, HEADER_SIZE, savedata_encr, HEADER_SIZE);

@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
 
 	printf("----------------------------------------------\n");
 	printf("Nioh Savedata decryption/encryption tool by B3.\n");
-	printf("Tool version: 1.1\n");
+	printf("Tool version: 1.1 - No body sub key conservation branch\n");
 	printf("Developed for game version 1.21.02\n");
 	printf("----------------------------------------------\n\n");
 
