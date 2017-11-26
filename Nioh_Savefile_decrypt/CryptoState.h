@@ -4,7 +4,8 @@
 #define HEADER_SIZE 0x148
 #define USR_BODY_SIZE 0x1F2C50 
 #define SYS_BODY_SIZE 0x2518
-//#define SAVEDATA_SIZE 0x1F2D98
+//#define PRESERVE_BODY_SUB_KEYS
+//#define DEBUG
 
 enum DECRYPTION_TYPE { HEADER, BODY };
 enum FILE_TYPE { USR, SYS };
@@ -26,7 +27,7 @@ private:
 	unsigned char* savedata_clear;
 
 public:
-	CryptoState(unsigned char* root_crypto_blob);
+	CryptoState();
 	bool decrypt(unsigned char* cipher_text, unsigned char* clear_text);
 	static int get_file_size();
 private:
