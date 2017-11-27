@@ -43,9 +43,9 @@ public:
 		return false;
 	}
 
-	static bool save_decrypted_savefile(std::string path, unsigned char* buffer, unsigned int size) {
+	static bool save_decrypted_savefile(std::string path, unsigned char* buffer, unsigned int size, std::string prefix="") {
 		std::experimental::filesystem::path file_path(path);
-		std::ofstream savefile("decr_"+file_path.filename().string(), std::ios::out | std::ios::binary);
+		std::ofstream savefile(prefix + file_path.filename().string(), std::ios::out | std::ios::binary);
 		if (savefile.is_open()) {
 			savefile.write(reinterpret_cast<char*>(buffer), size);
 			savefile.close();

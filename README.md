@@ -1,9 +1,25 @@
 # Nioh Savedata Encryption/Decryption Tool
 
-This tool allows the decryption and encryption of Nioh user and system save files. You can find the latest release version [here](https://github.com/pawREP/Nioh-Savedata-Decryption-Tool/releases/latest).
+This tool allows the decryption and encryption of Nioh(Steam) user and system save files. Some basic save file editing features such as the transfer of save files to other steam accounts are also provided. You can find the latest release version [here](https://github.com/pawREP/Nioh-Savedata-Decryption-Tool/releases/latest).
 
 ### How to use:
+
+Use `-h` for a full list of cmd arguments.
+
+**De-/Encryption:**
+
 Files are encrypted and decrypted by dragging them onto the exe or equivalently by passing the file path as the first argument when using the tool in the command line. Whether encryption or decryption is performed is automatically determined based on the first 4 bytes of the input file. Decrypted save files always start with `4E 49 4F 48`.
+
+**Transfering save files to new steam accounts:**
+
+Transfering save files between steam accounts is possible with the command line argument `-sid [SteamID3]`. You can look up your SteamID3 at [steamid.io](https://steamid.io/).
+
+Example: `.\Nioh_Savefile_Decrypt.exe -i SOMEONES_SAVEDATA.BIN -sid 123456789 -o SAVEDATA.BIN`
+
+**Disabling integrity checks:**
+
+Parts of the save file body are protected via a checksum. I haven't had the time to reverse the whole algorithm yet as it is rather lengthy. Fortunately there are a bunch of flags in the save file that can be used to completely disable the integrity check. Use `-cs` to disable integrity checks. I haven't tested it extensively but I was able to change for example the current level and play time without any checksum issues after using `-cs`.
+
 
 ## Cipher overview:
 

@@ -28,15 +28,15 @@ private:
 
 public:
 	CryptoState();
-	bool decrypt(unsigned char* cipher_text, unsigned char* clear_text);
+	bool crypt(unsigned char* cipher_text, unsigned char* clear_text);
 	static int get_file_size();
+	bool is_encrypted(unsigned char* buf);
 private:
 	void decrypt_header();
 	void decrypt_body();
 	void key_setup(DECRYPTION_TYPE type);
 	void deconstruct_root_key_pair(DECRYPTION_TYPE type);
 	void incr_byte_array(unsigned char* arr, unsigned int incr = 0);
-	void flip_32bit_endianness(unsigned char* arr);
-	bool is_encrypted(unsigned char* buf);
+	void flip_32bit_endianness(unsigned char* arr);	
 };
 

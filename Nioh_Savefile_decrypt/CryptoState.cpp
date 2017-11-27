@@ -157,11 +157,11 @@ void CryptoState::incr_byte_array(unsigned char* arr, unsigned int incr) {
 	}
 }
 
-bool CryptoState::decrypt(unsigned char* cipher_text, unsigned char* clear_text) {
+bool CryptoState::crypt(unsigned char* cipher_text, unsigned char* clear_text) {
 	savedata_encr = cipher_text;
 	savedata_clear = clear_text;
 	if (is_encrypted(savedata_encr)) {
-		printf("Detected encrypted %s file. Starting decryption...   ", file_type == FILE_TYPE::USR ? "NIOHUSR" : "NIOHSYS");
+		printf("Detected encrypted %s file. Starting decryption...   \n", file_type == FILE_TYPE::USR ? "NIOHUSR" : "NIOHSYS");
 		key_setup(DECRYPTION_TYPE::HEADER);
 		decrypt_header();
 		//check if steam account is correct
@@ -184,7 +184,7 @@ bool CryptoState::decrypt(unsigned char* cipher_text, unsigned char* clear_text)
 		return !is_encrypted(savedata_clear);
 	} 
 	else {
-		printf("Detected decrypted %s file. Starting encryption...   ", file_type == FILE_TYPE::USR ? "NIOHUSR" : "NIOHSYS");
+		printf("Detected decrypted %s file. Starting encryption...   \n", file_type == FILE_TYPE::USR ? "NIOHUSR" : "NIOHSYS");
 		memcpy_s(savedata_clear, HEADER_SIZE, savedata_encr, HEADER_SIZE);
 		key_setup(DECRYPTION_TYPE::BODY);
 		decrypt_body();
